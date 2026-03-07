@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Tracking Puzzle Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- MediaPipe Hands & Camera Utils -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Sidebar: Puzzle Selection & Score -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h1>Magic<span>Puzzle</span></h1>
+            </div>
+
+            <div class="stats panel">
+                <h3>Current Score</h3>
+                <div class="score-display" id="scoreDisplay">0</div>
+                <div class="timer" id="timerDisplay">Time: 00:00</div>
+            </div>
+
+            <div class="puzzle-selector panel">
+                <h3>Select a Puzzle</h3>
+                <ul id="puzzleList" class="puzzle-list">
+                    <li>Loading...</li>
+                </ul>
+            </div>
+            
+            <div class="camera-preview panel">
+                <h3>Camera Feed (Mirrored)</h3>
+                <div class="video-container">
+                    <video id="input_video" class="input_video" autoplay playsinline></video>
+                    <canvas id="output_canvas" class="output_canvas" width="320" height="240"></canvas>
+                </div>
+                <p id="trackingStatus" class="status-msg warning">Waiting for camera...</p>
+            </div>
+        </aside>
+
+        <!-- Main Game Area -->
+        <main class="game-area">
+            <div class="header-status">
+                <h2 id="currentPuzzleTitle">Select a puzzle to start</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" id="startBtn" disabled>Start Game</button>
+                    <button class="btn btn-secondary" id="resetBtn" disabled>Reset</button>
+                </div>
+            </div>
+
+            <div class="board-container" id="boardContainer">
+                <div class="puzzle-grid" id="puzzleGrid">
+                    <!-- Grid drop zones will be generated here -->
+                </div>
+                <!-- Puzzle pieces will be spawned in this container, freely draggable -->
+                <div id="piecesContainer" class="pieces-container"></div>
+            </div>
+
+            <!-- Virtual Cursor for Hand Tracking -->
+            <div id="virtualCursor" class="virtual-cursor"></div>
+            <!-- Pinch Indicator -->
+            <div id="pinchIndicator" class="pinch-indicator">GRABBING!</div>
+        </main>
+        
+    </div>
+
+    <!-- Modals -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2 class="gradient-text">Puzzle Completed!</h2>
+            <p>Time: <span id="finalTime">00:00</span></p>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button class="btn btn-primary lg" id="playAgainBtn">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/game.js"></script>
+    <script src="js/hand_tracking.js"></script>
+</body>
+</html>

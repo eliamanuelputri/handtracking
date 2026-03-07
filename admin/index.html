@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puzzle Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f43f5e;
+            --primary-hover: #e11d48;
+            --bg-color: #fdf2f8;
+            --surface: rgba(255, 255, 255, 0.9);
+            --surface-border: rgba(244, 114, 182, 0.3);
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at top right, #fce7f3, #fdf2f8 60%);
+            padding: 2rem;
+        }
+
+        .dashboard {
+            width: 100%;
+            max-width: 900px;
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--surface-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(244, 114, 182, 0.3);
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #f43f5e, #fb7185);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.4);
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.5);
+        }
+
+        #message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+
+        .success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .puzzle-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .puzzle-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(244, 114, 182, 0.1);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: background 0.3s;
+        }
+
+        .puzzle-item:hover {
+            background: rgba(244, 114, 182, 0.2);
+        }
+
+        .puzzle-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 1rem;
+        }
+
+        .puzzle-info h4 { margin-bottom: 0.25rem; }
+        .puzzle-info p { color: var(--text-muted); font-size: 0.85rem; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <p class="subtitle">Manage interactive puzzles for the hand tracking app</p>
+        </header>
+
+        <div class="grid-container">
+            <!-- Upload Section -->
+            <div class="card">
+                <h2>Upload New Puzzle</h2>
+                <form id="uploadForm">
+                    <div class="form-group">
+                        <label for="title">Puzzle Title</label>
+                        <input type="text" id="title" name="title" placeholder="E.g., Beautiful Sunset" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Upload Image</label>
+                        <input type="file" id="image" name="image" accept="image/*" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="columns">Grid Columns</label>
+                            <input type="number" id="columns" name="columns" value="3" min="2" max="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="rows">Grid Rows</label>
+                            <input type="number" id="rows" name="rows" value="3" min="2" max="10" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn">Create Puzzle</button>
+                    <div id="message"></div>
+                </form>
+            </div>
+
+            <!-- List Section -->
+            <div class="card">
+                <h2>Available Puzzles</h2>
+                <ul class="puzzle-list" id="puzzleList">
+                    <!-- Puzzles will be loaded here dynamically -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPuzzles();
+
+            const form = document.getElementById('uploadForm');
+            const messageEl = document.getElementById('message');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitBtn.textContent = 'Uploading...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch('../backend/upload.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) throw new Error(result.error || 'Upload failed');
+
+                    showMessage(result.message, 'success');
+                    form.reset();
+                    fetchPuzzles();
+
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                } finally {
+                    submitBtn.textContent = 'Create Puzzle';
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+
+        function showMessage(msg, type) {
+            const el = document.getElementById('message');
+            el.textContent = msg;
+            el.className = type;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+
+        async function fetchPuzzles() {
+            const list = document.getElementById('puzzleList');
+            list.innerHTML = '<p class="subtitle" style="text-align:center;">Loading puzzles...</p>';
+
+            try {
+                const response = await fetch('../backend/get_puzzles.php');
+                const result = await response.json();
+
+                if (!response.ok) throw new Error(result.message || 'Failed to load');
+
+                if (result.success && result.data.length > 0) {
+                    list.innerHTML = '';
+                    result.data.forEach(puzzle => {
+                        list.innerHTML += `
+                            <li class="puzzle-item">
+                                <img src="../${puzzle.image_url}" alt="${puzzle.title}" onerror="this.src='https://via.placeholder.com/60?text=No+Img'">
+                                <div class="puzzle-info">
+                                    <h4>${puzzle.title}</h4>
+                                    <p>${puzzle.grid_columns}x${puzzle.grid_rows} Grid • Added ${new Date(puzzle.created_at).toLocaleDateString()}</p>
+                                </div>
+                            </li>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = '<p class="subtitle" style="text-align:center;">No puzzles found.</p>';
+                }
+            } catch (error) {
+                list.innerHTML = `<p class="error" style="text-align:center; padding: 1rem; border-radius:8px;">${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

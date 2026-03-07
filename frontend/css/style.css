@@ -1,0 +1,358 @@
+:root {
+    --primary: #f43f5e;
+    --primary-hover: #e11d48;
+    --secondary: #fbbf24;
+    --bg-dark: #fdf2f8; 
+    --surface: rgba(255, 255, 255, 0.85);
+    --surface-border: rgba(244, 114, 182, 0.4);
+    --text: #1e293b;
+    --text-muted: #64748b;
+    --radius: 20px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background: radial-gradient(circle at top right, #fce7f3, #fdf2f8 60%);
+    color: var(--text);
+    min-height: 100vh;
+    overflow: hidden; /* Prevent scrolling, game area is fixed */
+}
+
+/* Typography & General */
+h1 { font-size: 2.5rem; font-weight: 800; }
+h1 span {
+    background: linear-gradient(135deg, #f43f5e, #fb7185);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+h2 { font-size: 1.8rem; font-weight: 600; margin-bottom: 1rem; }
+h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;}
+.gradient-text {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    padding: 1rem;
+    gap: 2rem;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+.logo {
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.panel {
+    background: var(--surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.stats {
+    text-align: center;
+}
+.score-display {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #f43f5e;
+    text-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+.timer {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+/* Puzzle List */
+.puzzle-selector {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.puzzle-list {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.5rem;
+}
+.puzzle-list li {
+    background: rgba(244, 114, 182, 0.1);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+.puzzle-list li:hover {
+    background: rgba(244, 114, 182, 0.2);
+}
+.puzzle-list li.active {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: var(--primary);
+}
+
+/* Camera Preview */
+.camera-preview {
+    text-align: center;
+}
+.video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: #f1f5f9;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+.input_video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* Mirror camera */
+}
+.output_canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+.status-msg {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.status-msg.warning { color: #fbbf24; }
+.status-msg.success { color: #34d399; }
+
+/* Main Game Area */
+.game-area {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius);
+    border: 1px solid var(--surface-border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-status {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--surface-border);
+}
+.controls {
+    display: flex;
+    gap: 1rem;
+}
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+}
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+.btn-secondary {
+    background: rgba(244, 114, 182, 0.2);
+    color: var(--text);
+}
+.btn-secondary:hover:not(:disabled) {
+    background: rgba(244, 114, 182, 0.3);
+}
+
+/* Puzzle Board */
+.board-container {
+    flex: 1;
+    position: relative;
+    margin: 2rem;
+    border: 2px dashed rgba(244, 114, 182, 0.5);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.puzzle-grid {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: grid;
+    gap: 2px;
+    background: rgba(255, 255, 255, 0.4);
+    border: 4px solid rgba(244, 114, 182, 0.5);
+    border-radius: 8px;
+    z-index: 1;
+}
+
+.grid-cell {
+    background: rgba(248, 250, 252, 0.8);
+    transition: background 0.3s;
+}
+.grid-cell.highlight {
+    background: rgba(244, 63, 94, 0.2);
+}
+
+.pieces-container {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; /* Let pieces be targeted only by JS */
+    z-index: 5;
+}
+
+.puzzle-piece {
+    position: absolute;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    background-size: cover; /* Background size will be set via JS based on grid dimensions */
+    background-repeat: no-repeat;
+    transition: transform 0.1s ease-out;
+    pointer-events: none; /* Crucial: mouse interactions are handled globally */
+    z-index: 5;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.puzzle-piece.grabbed {
+    transform: scale(1.05); /* slightly bigger when grabbed */
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 0 4px #ffffff;
+    border-color: #ffffff; /* Clear white border when held */
+}
+.puzzle-piece.snapped {
+    transition: left 0.3s ease, top 0.3s ease; /* smooth snap */
+    z-index: 2; /* behind moving pieces */
+    box-shadow: none;
+    border-color: transparent;
+}
+
+/* Hand Tracking UI */
+.virtual-cursor {
+    position: fixed; /* Must be fixed to map directly to viewport coords */
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #facc15 0%, #ca8a04 100%);
+    border-radius: 50%;
+    top: -50px; left: -50px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px #facc15, inset 0 0 5px white;
+    transition: transform 0.05s linear;
+}
+
+.virtual-cursor.grabbing {
+    width: 16px;
+    height: 16px;
+    background: #ef4444; /* red when grabbing */
+    box-shadow: 0 0 20px #ef4444;
+}
+
+.pinch-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    z-index: 1001;
+    opacity: 0;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.5);
+}
+.pinch-indicator.show {
+    opacity: 1;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { transform: translateX(-50%) scale(1); }
+    to { transform: translateX(-50%) scale(1.05); }
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+.modal.show { display: flex; }
+
+.modal-content {
+    background: var(--surface);
+    border: 1px solid var(--surface-border);
+    padding: 3rem;
+    border-radius: 24px;
+    text-align: center;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+    animation: modalIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal h2 { font-size: 2.5rem; margin-bottom: 1.5rem; }
+.modal p { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 0.5rem;}
+.modal .btn { margin-top: 2rem; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(244, 114, 182, 0.5); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(244, 114, 182, 0.8); }
