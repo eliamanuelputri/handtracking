@@ -24,13 +24,28 @@ const el = {
     winModal: document.getElementById('winModal'),
     finalTime: document.getElementById('finalTime'),
     finalScore: document.getElementById('finalScore'),
-    playAgainBtn: document.getElementById('playAgainBtn')
+    playAgainBtn: document.getElementById('playAgainBtn'),
+    puzzlePreviewBox: document.getElementById('puzzlePreviewBox'),
+    puzzlePreviewImg: document.getElementById('puzzlePreviewImg')
 };
 
 // Initialize
 async function initGame() {
+    // Redirect to login if not logged in
+    if (!localStorage.getItem('playerName')) {
+        window.location.href = '../../index.html';
+        return;
+    }
     await fetchPuzzles();
     setupEventListeners();
+
+    // Auto-select puzzle from URL param (e.g. ?puzzle=3 from menu.html)
+    const params = new URLSearchParams(window.location.search);
+    const paramId = params.get('puzzle');
+    if (paramId) {
+        const idx = state.puzzles.findIndex(p => String(p.id) === paramId);
+        if (idx >= 0) selectPuzzle(idx);
+    }
 }
 
 async function fetchPuzzles() {
@@ -70,6 +85,10 @@ function selectPuzzle(index) {
     state.activePuzzle = state.puzzles[index];
     el.currentPuzzleTitle.textContent = state.activePuzzle.title;
     el.startBtn.disabled = false;
+    
+    // Show unsliced preview image
+    el.puzzlePreviewImg.src = `../${state.activePuzzle.image_url}`;
+    el.puzzlePreviewBox.style.display = 'flex';
     
     // Auto preview or prepare board
     prepareBoard();
@@ -147,7 +166,7 @@ function startGame() {
 function stopGame() {
     state.isPlaying = false;
     clearInterval(state.timerInterval);
-    el.timerDisplay.textContent = 'Time: 00:00';
+    el.timerDisplay.textContent = '00:00';
     el.startBtn.disabled = false;
     el.resetBtn.disabled = true;
     el.puzzleList.style.pointerEvents = 'auto';
@@ -158,7 +177,7 @@ function updateTimer() {
     const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
     const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
     const s = String(elapsed % 60).padStart(2, '0');
-    el.timerDisplay.textContent = `Time: ${m}:${s}`;
+    el.timerDisplay.textContent = `${m}:${s}`;
 }
 
 function spawnPieces() {
@@ -345,8 +364,29 @@ function handleWin() {
     el.finalScore.textContent = state.score;
     el.winModal.classList.add('show');
     
-    // Optional: save score to db via fetch
-    // fetch('../backend/save_score.php', { ... })
+    // Save score to db
+    const playerName = localStorage.getItem('playerName');
+    const puzzleId = state.activePuzzle.id;
+    
+    fetch('../backend/save_score.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            player_name: playerName,
+            puzzle_id: puzzleId,
+            score: state.score,
+            time_taken: elapsed
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Score saved successfully");
+        } else {
+            console.error("Failed to save score:", data.message);
+        }
+    })
+    .catch(err => console.error("Error saving score:", err));
 }
 
 // Start

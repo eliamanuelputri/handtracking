@@ -32,26 +32,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute([$title, 'uploads/' . $newFileName, $columns, $rows])) {
             $puzzleId = $pdo->lastInsertId();
             
-            // Generate pieces in database
-            // Grid cell dimensions aren't strictly needed if we calculate responsively,
-            // but we can store the theoretical correct grid indices.
-            $stmtPiece = $pdo->prepare("INSERT INTO puzzle_pieces (puzzle_id, piece_index, correct_x, correct_y, current_x, current_y) VALUES (?, ?, ?, ?, ?, ?)");
-            $index = 0;
-            for ($r = 0; $r < $rows; $r++) {
-                for ($c = 0; $c < $columns; $c++) {
-                    $stmtPiece->execute([$puzzleId, $index, $c, $r, rand(0, 100), rand(0, 100)]);
-                    $index++;
+            try {
+                $stmtPiece = $pdo->prepare("INSERT INTO puzzle_pieces (puzzle_id, piece_index, correct_x, correct_y, current_x, current_y) VALUES (?, ?, ?, ?, ?, ?)");
+                $index = 0;
+                for ($r = 0; $r < $rows; $r++) {
+                    for ($c = 0; $c < $columns; $c++) {
+                        $stmtPiece->execute([$puzzleId, $index, $c, $r, rand(0, 100), rand(0, 100)]);
+                        $index++;
+                    }
                 }
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'Puzzle uploaded successfully',
+                    'puzzle_id' => $puzzleId
+                ]);
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Piece generation failed: ' . $e->getMessage()]);
             }
-
-            echo json_encode([
-                'success' => true, 
-                'message' => 'Puzzle uploaded successfully',
-                'puzzle_id' => $puzzleId
-            ]);
         } else {
+            $errorInfo = $stmt->errorInfo();
             http_response_code(500);
-            echo json_encode(['error' => 'Database insert failed.']);
+            echo json_encode(['error' => 'Database insert failed: ' . ($errorInfo[2] ?? 'Unknown error')]);
         }
     } else {
         http_response_code(500);

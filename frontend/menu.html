@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MagicPuzzle – Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #e8edf3;
+            --surface: #e8edf3;
+            --nm-light: #ffffff;
+            --nm-dark: #c3cbd6;
+            --primary: #e05c7a;
+            --primary-dark: #c0405c;
+            --text: #3a4050;
+            --text-muted: #7a8499;
+            --text-light: #aab0bf;
+            --nm-shadow: 8px 8px 18px var(--nm-dark), -8px -8px 18px var(--nm-light);
+            --nm-shadow-sm: 4px 4px 10px var(--nm-dark), -4px -4px 10px var(--nm-light);
+            --nm-pressed: inset 5px 5px 12px var(--nm-dark), inset -5px -5px 12px var(--nm-light);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit',sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── NAVBAR ── */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.1rem 2.5rem;
+            background: var(--bg);
+            box-shadow: 0 4px 12px var(--nm-dark), 0 -2px 6px var(--nm-light);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 0.75rem; }
+        .nav-logo img {
+            height: 40px; width: 40px;
+            object-fit: contain; border-radius: 10px;
+        }
+        .logo-fallback {
+            height: 40px; width: 40px;
+            border-radius: 10px;
+            background: var(--primary);
+            display: none;
+            align-items: center; justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: var(--nm-shadow-sm);
+        }
+        .nav-logo h1 { font-size: 1.55rem; font-weight: 800; color: var(--text); }
+        .nav-logo h1 span { color: var(--primary); }
+        .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+        #playerGreet { font-weight: 600; color: var(--text-muted); font-size: 0.88rem; }
+        .nm-btn {
+            padding: 0.55rem 1.3rem;
+            border-radius: 10px;
+            font-weight: 700; font-size: 0.87rem;
+            cursor: pointer; border: none;
+            background: var(--bg);
+            color: var(--text-muted);
+            box-shadow: var(--nm-shadow-sm);
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .nm-btn:hover { color: var(--primary); }
+        .nm-btn:active { box-shadow: var(--nm-pressed); }
+        .nm-btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 4px 4px 10px rgba(192,64,92,0.4), -2px -2px 8px rgba(255,200,210,0.25);
+        }
+        .nm-btn-primary:hover { background: var(--primary-dark); color: white; }
+
+        /* ── HERO ── */
+        .hero {
+            text-align: center;
+            padding: 3.5rem 2rem 1.75rem;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: var(--bg);
+            box-shadow: var(--nm-shadow-sm);
+            color: var(--primary);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.78rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .hero h2 {
+            font-size: 2.5rem; font-weight: 800;
+            margin-bottom: 0.65rem; color: var(--text);
+        }
+        .hero h2 span { color: var(--primary); }
+        .hero p { color: var(--text-muted); font-size: 1rem; max-width: 480px; margin: 0 auto; }
+
+        /* ── PUZZLE GRID ── */
+        .section {
+            flex: 1;
+            padding: 1.5rem 2.5rem 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .section-header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.75rem;
+        }
+        .section-title {
+            font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+        #puzzleCount {
+            font-size: 0.82rem; color: var(--text-muted);
+            background: var(--bg);
+            box-shadow: var(--nm-shadow-sm);
+            padding: 0.28rem 0.9rem; border-radius: 20px;
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .puzzle-card {
+            background: var(--bg);
+            border-radius: 20px;
+            box-shadow: var(--nm-shadow);
+            overflow: hidden;
+            transition: box-shadow 0.3s, transform 0.3s;
+            cursor: pointer;
+            animation: cardIn 0.5s ease-out both;
+        }
+        .puzzle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 12px 12px 24px var(--nm-dark), -8px -8px 20px var(--nm-light);
+        }
+        @keyframes cardIn {
+            from { opacity:0; transform: translateY(18px); }
+            to   { opacity:1; transform: translateY(0); }
+        }
+
+        .card-img-wrap {
+            position: relative;
+            width: 100%; aspect-ratio: 1/1;
+            overflow: hidden;
+            background: #d8e0ea;
+        }
+        .card-img-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .puzzle-card:hover .card-img-wrap img { transform: scale(1.06); }
+        .card-badge {
+            position: absolute; top: 0.7rem; right: 0.7rem;
+            background: rgba(40,46,60,0.6);
+            backdrop-filter: blur(4px);
+            color: white;
+            font-size: 0.72rem; font-weight: 700;
+            padding: 0.25rem 0.65rem; border-radius: 8px;
+        }
+
+        .card-body { padding: 1.1rem 1.1rem 1.4rem; }
+        .card-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--text); }
+        .card-meta {
+            font-size: 0.78rem; color: var(--text-muted);
+            margin-bottom: 1.1rem; display: flex; gap: 0.4rem; flex-wrap: wrap;
+        }
+        .card-meta span {
+            background: var(--bg);
+            box-shadow: var(--nm-shadow-sm);
+            border-radius: 6px; padding: 0.15rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        .btn-play {
+            width: 100%; padding: 0.75rem;
+            background: var(--primary);
+            color: white; border: none;
+            border-radius: 12px;
+            font-size: 0.9rem; font-weight: 700;
+            cursor: pointer;
+            box-shadow: 4px 4px 10px rgba(192,64,92,0.4), -2px -2px 8px rgba(255,200,210,0.2);
+            transition: all 0.2s;
+            letter-spacing: 0.4px;
+        }
+        .btn-play:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-play:active {
+            box-shadow: inset 4px 4px 8px rgba(160,40,70,0.4);
+            transform: scale(0.98);
+        }
+
+        /* States */
+        .state-box {
+            text-align: center; padding: 4rem 2rem;
+            color: var(--text-muted); grid-column: 1 / -1;
+        }
+        .state-box .icon { font-size: 2.8rem; margin-bottom: 0.8rem; }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 1.25rem;
+            font-size: 0.78rem; color: var(--text-light);
+            box-shadow: 0 -3px 10px var(--nm-dark), 0 2px 6px var(--nm-light);
+        }
+        footer span { color: var(--primary); font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo">
+            <img id="logoImg" src="assets/logo.png" alt="Logo"
+                 onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+            <div class="logo-fallback" id="logoFallback">🧩</div>
+            <h1>Magic<span>Puzzle</span></h1>
+        </div>
+        <div class="nav-actions">
+            <span id="playerGreet"></span>
+            <a href="index.html" class="nm-btn nm-btn-primary">🎮 Buka Game</a>
+            <a href="../index.html" class="nm-btn" onclick="localStorage.clear()">Keluar</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">✨ Hand Tracking Puzzle</div>
+        <h2>Pilih <span>Puzzle</span> Kamu</h2>
+        <p>Susun puzzle menggunakan gerakan tangan — tanpa menyentuh layar!</p>
+    </div>
+
+    <section class="section">
+        <div class="section-header">
+            <div class="section-title">🗂 Semua Puzzle</div>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <button class="nm-btn" onclick="openLeaderboard()" style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+                    🏆 <span>Skor Tertinggi</span>
+                </button>
+                <div id="puzzleCount"></div>
+            </div>
+        </div>
+        <div class="puzzle-grid" id="puzzleGrid">
+            <div class="state-box"><div class="icon">⏳</div><p>Memuat puzzle...</p></div>
+        </div>
+    </section>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboardModal" class="nm-modal">
+        <div class="nm-modal-content">
+            <div class="modal-header">
+                <h2>🏆 Papan <span>Skor</span></h2>
+                <button class="close-btn" onclick="closeLeaderboard()">&times;</button>
+            </div>
+            <div id="leaderboardStatus" style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem; text-align: center;">Memuat...</div>
+            <div class="leaderboard-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Pemain</th>
+                            <th style="text-align:center;">Puzzle Selesai</th>
+                            <th>Total Skor</th>
+                            <th>Total Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Leaderboard entries will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .nm-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(232, 237, 243, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .nm-modal.show { display: flex; opacity: 1; }
+        
+        .nm-modal-content {
+            background: var(--bg);
+            width: 90%;
+            max-width: 800px;
+            max-height: 85vh;
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 20px 20px 50px var(--nm-dark), -20px -20px 50px var(--nm-light);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .nm-modal.show .nm-modal-content { transform: scale(1); }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .modal-header h2 { font-size: 1.8rem; font-weight: 800; }
+        .modal-header h2 span { color: var(--primary); }
+
+        .close-btn {
+            background: var(--bg);
+            border: none;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            box-shadow: var(--nm-shadow-sm);
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .close-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        .close-btn:active { box-shadow: var(--nm-pressed); }
+
+        .leaderboard-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .leaderboard-table th {
+            padding: 1rem;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--nm-dark);
+            position: sticky; top: 0; background: var(--bg);
+        }
+        .leaderboard-table td {
+            padding: 1rem;
+            font-size: 0.95rem;
+            color: var(--text);
+            border-bottom: 1px solid rgba(195, 203, 214, 0.3);
+        }
+        .leaderboard-table tr:hover { background: rgba(255,255,255,0.2); }
+        
+        .rank-badge {
+            display: inline-block;
+            width: 28px; height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            background: var(--bg);
+            box-shadow: 4px 4px 8px var(--nm-dark), -4px -4px 8px var(--nm-light);
+            font-weight: 800;
+            font-size: 0.8rem;
+        }
+        .rank-1 { color: #fbbf24; box-shadow: inset 0 0 10px rgba(251,191,36,0.2); }
+        .rank-2 { color: #9ca3af; }
+        .rank-3 { color: #b45309; }
+        .score-val-leader { font-weight: 800; color: var(--primary); font-size: 1.05rem; }
+
+        /* Custom Scrollbar for Modal */
+        .leaderboard-container::-webkit-scrollbar { width: 6px; }
+        .leaderboard-container::-webkit-scrollbar-track { background: var(--bg); border-radius: 10px; }
+        .leaderboard-container::-webkit-scrollbar-thumb { background: var(--nm-dark); border-radius: 10px; }
+    </style>
+
+    <script>
+        function openLeaderboard() {
+            const modal = document.getElementById('leaderboardModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('show'), 10);
+            loadLeaderboard();
+        }
+
+        function closeLeaderboard() {
+            const modal = document.getElementById('leaderboardModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        // Close on background click
+        window.onclick = function(event) {
+            const modal = document.getElementById('leaderboardModal');
+            if (event.target == modal) { closeLeaderboard(); }
+        }
+
+        async function loadLeaderboard() {
+            const body = document.getElementById('leaderboardBody');
+            const status = document.getElementById('leaderboardStatus');
+            try {
+                const res = await fetch('../backend/get_leaderboard.php');
+                const json = await res.json();
+                if (json.success) {
+                    status.textContent = 'Peringkat Berdasarkan Total Skor';
+                    if (json.data.length > 0) {
+                        body.innerHTML = '';
+                        json.data.forEach((entry, i) => {
+                            const row = document.createElement('tr');
+                            const m = String(Math.floor(entry.total_time / 60)).padStart(2, '0');
+                            const s = String(entry.total_time % 60).padStart(2, '0');
+                            
+                            row.innerHTML = `
+                                <td><span class="rank-badge rank-${i+1}">${i + 1}</span></td>
+                                <td style="font-weight:700;">${entry.username}</td>
+                                <td style="text-align:center; color: var(--text-muted); font-size: 0.85rem;">${entry.puzzles_played}</td>
+                                <td class="score-val-leader">${Number(entry.total_score).toLocaleString()}</td>
+                                <td style="font-weight:600;">${m}:${s}</td>
+                            `;
+                            body.appendChild(row);
+                        });
+                    } else {
+                        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 3rem; color: var(--text-muted);">Belum ada skor tercatat.</td></tr>';
+                    }
+                }
+            } catch (e) {
+                status.textContent = 'Gagal memuat data';
+                console.error(e);
+            }
+        }
+    </script>
+
+    <footer>&copy; 2026 <span>Elia Manuel Putri</span>. All rights reserved.</footer>
+
+    <script>
+        const playerName = localStorage.getItem('playerName');
+        if (!playerName) { window.location.href = '../index.html'; }
+        document.getElementById('playerGreet').textContent = `👋 Halo, ${playerName}!`;
+
+        async function loadPuzzles() {
+            const grid = document.getElementById('puzzleGrid');
+            try {
+                const res = await fetch('../backend/get_puzzles.php');
+                const json = await res.json();
+                if (json.success && json.data.length > 0) {
+                    const puzzles = json.data;
+                    document.getElementById('puzzleCount').textContent = `${puzzles.length} puzzle`;
+                    grid.innerHTML = '';
+                    puzzles.forEach((p, i) => {
+                        const card = document.createElement('div');
+                        card.className = 'puzzle-card';
+                        card.style.animationDelay = `${i * 0.07}s`;
+                        card.innerHTML = `
+                            <div class="card-img-wrap">
+                                <img src="../${p.image_url}" alt="${p.title}"
+                                     onerror="this.src='https://placehold.co/240x240/e8edf3/e05c7a?text=No+Image'">
+                                <div class="card-badge">${p.grid_columns}×${p.grid_rows}</div>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-title">${p.title}</div>
+                                <div class="card-meta">
+                                    <span>🧩 ${p.grid_columns * p.grid_rows} keping</span>
+                                    <span>📅 ${new Date(p.created_at).toLocaleDateString('id-ID')}</span>
+                                </div>
+                                <button class="btn-play" onclick="playPuzzle(${p.id})">▶ Mainkan</button>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } else {
+                    grid.innerHTML = `<div class="state-box"><div class="icon">🗂</div><p>Belum ada puzzle. Minta admin menambahkan.</p></div>`;
+                }
+            } catch (e) {
+                grid.innerHTML = `<div class="state-box"><div class="icon">❌</div><p>Gagal memuat puzzle.</p></div>`;
+            }
+        }
+
+        function playPuzzle(puzzleId) {
+            window.location.href = `index.html?puzzle=${puzzleId}`;
+        }
+
+        loadPuzzles();
+    </script>
+</body>
+</html>

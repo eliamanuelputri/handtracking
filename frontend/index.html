@@ -19,21 +19,36 @@
         
         <!-- Sidebar: Puzzle Selection & Score -->
         <aside class="sidebar">
-            <div class="logo">
-                <h1>Magic<span>Puzzle</span></h1>
+            <!-- Logo Area (ganti assets/logo.png dengan logo kamu nanti) -->
+            <div class="logo-area panel">
+                <img id="sidebarLogo" src="assets/logo.png" alt="Logo"
+                     onerror="this.style.display='none'; document.getElementById('logoText').style.display='block'">
+                <div id="logoText" style="display:none;">
+                    <h1>Magic<span>Puzzle</span></h1>
+                </div>
             </div>
 
-            <div class="stats panel">
-                <h3>Current Score</h3>
-                <div class="score-display" id="scoreDisplay">0</div>
-                <div class="timer" id="timerDisplay">Time: 00:00</div>
+            <!-- Compact Score + Timer -->
+            <div class="score-compact panel">
+                <div class="score-row">
+                    <div class="score-item">
+                        <span class="score-label">Skor</span>
+                        <span class="score-val" id="scoreDisplay">0</span>
+                    </div>
+                    <div class="score-divider"></div>
+                    <div class="score-item">
+                        <span class="score-label">Waktu</span>
+                        <span class="score-val" id="timerDisplay">00:00</span>
+                    </div>
+                </div>
             </div>
 
             <div class="puzzle-selector panel">
-                <h3>Select a Puzzle</h3>
+                <h3>Pilih Puzzle</h3>
                 <ul id="puzzleList" class="puzzle-list">
                     <li>Loading...</li>
                 </ul>
+                <a href="menu.html" class="btn-menu-link">🗂 Lihat Semua Puzzle</a>
             </div>
             
             <div class="camera-preview panel">
@@ -44,6 +59,11 @@
                 </div>
                 <p id="trackingStatus" class="status-msg warning">Waiting for camera...</p>
             </div>
+
+            <!-- Copyright -->
+            <div class="sidebar-footer">
+                &copy; 2026 <span>Elia Manuel Putri</span>. All rights reserved.
+            </div>
         </aside>
 
         <!-- Main Game Area -->
@@ -51,6 +71,7 @@
             <div class="header-status">
                 <h2 id="currentPuzzleTitle">Select a puzzle to start</h2>
                 <div class="controls">
+                    <a href="menu.html" class="btn btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center;">🏠 Kembali</a>
                     <button class="btn btn-primary" id="startBtn" disabled>Start Game</button>
                     <button class="btn btn-secondary" id="resetBtn" disabled>Reset</button>
                 </div>
@@ -62,6 +83,12 @@
                 </div>
                 <!-- Puzzle pieces will be spawned in this container, freely draggable -->
                 <div id="piecesContainer" class="pieces-container"></div>
+
+                <!-- Preview: Unsliced puzzle image reference -->
+                <div class="puzzle-preview-box" id="puzzlePreviewBox">
+                    <div class="preview-label">📷 Referensi</div>
+                    <img id="puzzlePreviewImg" class="puzzle-preview-img" src="" alt="Puzzle Preview" />
+                </div>
             </div>
 
             <!-- Virtual Cursor for Hand Tracking -->
